@@ -1,40 +1,33 @@
 import { defineConfig } from 'vite';
 import laravel from 'laravel-vite-plugin';
-import { viteStaticCopy } from 'vite-plugin-static-copy'
 
 export default defineConfig({
     build: {
         manifest: true,
-        rtl: true,
         outDir: 'public/build/',
         cssCodeSplit: true,
-        
+        rollupOptions: {
+            external: ['fsevents', 'tty', 'path'],
+        },
     },
     plugins: [
-        
-        viteStaticCopy({
-            targets: [
-                {
-                    src: 'resources/css',
-                    dest: 'css'
-                },
-                {
-                    src: 'resources/fonts',
-                    dest: ''
-                },
-                {
-                    src: 'resources/img',
-                    dest: ''
-                },
-                {
-                    src: 'resources/js',
-                    dest: ''
-                },
-                {
-                    src: 'resources/scss',
-                    dest: ''
-                },
+        laravel({
+            input: [
+                'resources/css/app.css',
+                'resources/js/app.js',
             ],
-        })
+            refresh: true,
+        }),
     ],
+    resolve: {
+        alias: {
+            'path': 'path-browserify',
+        },
+    },
+    define: {
+        'process.env': {},
+    },
+    optimizeDeps: {
+        exclude: ['fsevents', 'tty', 'path'],
+    },
 });
